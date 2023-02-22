@@ -26,6 +26,9 @@ void onInit(CBlob@ this)
 	this.SetMapEdgeFlags(u8(CBlob::map_collide_none | CBlob::map_collide_left | CBlob::map_collide_right | CBlob::map_collide_nodeath));
 
 	consts.net_threshold_multiplier = 10.0f;
+
+	this.set_u16("controller_blob_netid", 0);
+	this.set_u16("controller_player_netid", 0);
 }
 
 void onTick(CBlob@ this)
@@ -227,6 +230,8 @@ void onHitWorld(CBlob@ this, Vec2f end)
 
 		this.server_Die();
 	}
+
+	ResetPlayer(this);
 }
 
 void onHitBlob(CBlob@ this, Vec2f hit_position, Vec2f velocity, CBlob@ blob, u8 customData)
@@ -405,6 +410,8 @@ void onHitBlob(CBlob@ this, Vec2f hit_position, Vec2f velocity, CBlob@ blob, u8 
 			this.server_Hit(blob, hit_position, velocity, dmg, Hitters::arrow, false);
 		}
 	}
+
+	ResetPlayer(this);
 }
 
 bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
@@ -600,6 +607,24 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 {
 	return 0.0f; //no cut arrows
 }
+
+
+// TODO: Solve the problem of the player not being properly set back
+void ResetPlayer(CBlob@ this)
+{
+	if (isServer())
+	{
+		CPlayer@ ply = getPlayerByNetworkId(this.get_u16("controller_player_netid"));
+		CBlob@ blob = getBlobByNetworkID(this.get_u16("controller_blob_netid"));
+		if (blob !is null && ply !is null && !blob.hasTag("dead"))
+		{
+			blob.server_SetPlayer(ply);
+		}
+
+		this.server_Die();
+	}
+}
+
 /*
 void onHitBlob(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitBlob, u8 customData)
 {
