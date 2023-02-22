@@ -1336,6 +1336,20 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 					if (this.getName() == "sniper") proj.Tag("strong");
 					else if (this.getName() == "shotgun") proj.Tag("shrapnel");
 					proj.server_SetTimeToDie(infantry.bullet_lifetime);
+
+					// TODO: Restrict to sniper only
+					// TODO: Solve the problem of the player not being properly set back
+					CPlayer@ player = this.getPlayer();
+					if (player !is null)
+					{
+						proj.server_SetPlayer(player);
+						
+						const u16 caller_netid = this.getNetworkID();
+						proj.set_u16("controller_blob_netid", caller_netid);
+
+						const u16 player_netid = player.getNetworkID();
+						proj.set_u16("controller_player_netid", player_netid);
+					}
 				}
 				shotOnce = true;
 			}
