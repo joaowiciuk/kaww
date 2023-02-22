@@ -59,7 +59,10 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 		u8 exp_reward = XORRandom(2)+1;
 		CBitStream params;
 		params.write_u8(exp_reward);
-		hitterBlob.SendCommand(hitterBlob.getCommandID("addxp_universal"), params);
+
+		getRules().add_u32(hitterBlob.getPlayer().getUsername() + "_exp", exp_reward);
+		getRules().Sync(hitterBlob.getPlayer().getUsername() + "_exp", true);
+		hitterBlob.server_SendCommandToPlayer(hitterBlob.getCommandID("addxp_universal"), params, hitterBlob.getPlayer());
 	}
 	return damage;
 }

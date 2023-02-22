@@ -9,7 +9,7 @@ string[] smoke =
 	"LargeSmoke"
 };
 
-const u16 cooldown_time = 750; // 25 sec cd
+const u16 cooldown_time = 600; // 20 sec cd
 const f32 damage_modifier = 1.33f;
 
 const s16 init_gunoffset_angle = -2; // up by so many degrees
@@ -108,7 +108,7 @@ f32 getAngle(CBlob@ this, const u8 charge, VehicleInfo@ v)
 
 	bool not_found = true;
 
-	if (gunner !is null && gunner.getOccupied() !is null && !this.hasTag("broken"))
+	if (gunner !is null && gunner.getOccupied() !is null && !gunner.isKeyPressed(key_action2) && !this.hasTag("broken"))
 	{
 		Vec2f aim_vec = gunner.getPosition() - gunner.getAimPos();
 
@@ -458,7 +458,12 @@ bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 
 void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint @attachedPoint)
 {
-	if (attached.hasTag("player")) attached.Tag("covered");
+	if (attached.hasTag("player"))
+	{
+		attached.Tag("covered");
+		attached.Tag("artillery");
+		attached.Tag("increase_max_zoom");
+	}
 	VehicleInfo@ v;
 	if (!this.get("VehicleInfo", @v))
 	{
@@ -471,7 +476,12 @@ void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint @attachedPoint)
 
 void onDetach(CBlob@ this, CBlob@ detached, AttachmentPoint@ attachedPoint)
 {
-	if (detached.hasTag("player")) detached.Untag("covered");
+	if (detached.hasTag("player"))
+	{
+		detached.Untag("covered");
+		detached.Untag("artillery");
+		detached.Untag("increase_max_zoom");
+	}
 	VehicleInfo@ v;
 	if (!this.get("VehicleInfo", @v))
 	{
