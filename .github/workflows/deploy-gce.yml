@@ -36,6 +36,7 @@ jobs:
     # Build the Docker image
     - name: Build
       run: |-
+        cat ${{ secrets.KAG_AUTOCONFIG }} > autoconfig.cfg
         DOCKER_BUILDKIT=1 docker build \
           --quiet \
           --pull \
