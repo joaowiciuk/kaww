@@ -9,8 +9,9 @@ env:
   PROJECT_ID: ${{ secrets.GCE_PROJECT }}
   IMAGE: kaww
   REGISTRY: kaww
-  INSTANCE: kaww  # TODO: update to instance name
-  ZONE: us-central1   # TODO: update to instance zone
+  INSTANCE: kaww
+  ZONE: us-central1
+  GCE_ZONE: us-central1-a
 
 jobs:
   setup-build-publish-deploy:
@@ -53,5 +54,5 @@ jobs:
     - name: Deploy
       run: |-
         gcloud compute instances update-container "$INSTANCE" \
-          --zone "$ZONE" \
+          --zone "$GCE_ZONE" \
           --container-image "$ZONE-docker.pkg.dev/$PROJECT_ID/$REGISTRY/$IMAGE:$GITHUB_SHA"
